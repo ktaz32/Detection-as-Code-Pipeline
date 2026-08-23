@@ -1,0 +1,37 @@
+title: Successful Windows Logon After Repeated Failures
+id: 5f8f7210-3aa5-4c6d-8902-7af69f9d4004
+status: experimental
+description: >
+  Detects a successful Windows logon following multiple failed logon
+  attempts associated with the same user account and source address
+  within a short period. This behavior may indicate successful
+  credential guessing, brute-force activity, or account compromise.
+author: Khaled Taseen
+date: 2026-08-23
+
+logsource:
+  product: windows
+  service: security
+
+detection:
+  failed_logon:
+    EventID: 4625
+
+  successful_logon:
+    EventID: 4624
+
+  condition: failed_logon or successful_logon
+
+falsepositives:
+  - User repeatedly entering an incorrect password before successfully authenticating
+  - Password changes or recently expired credentials
+  - Misconfigured applications retrying authentication
+  - Legitimate administrative troubleshooting
+
+level: high
+
+tags:
+  - attack.credential-access
+  - attack.t1110
+  - attack.initial-access
+  - attack.t1078
