@@ -15,6 +15,24 @@ def load_json(path: Path) -> dict:
         return json.load(file)
 
 
+def parse_timestamp(value):
+    """
+    Parse an ISO 8601 timestamp.
+
+    Supports timestamps ending in Z by converting them to a
+    UTC-aware datetime value.
+    """
+    if not value:
+        return None
+
+    try:
+        return datetime.fromisoformat(
+            str(value).replace("Z", "+00:00")
+        )
+    except ValueError:
+        return None
+
+
 def matches_det_001(event: dict) -> bool:
     """
     DET-001 — Encoded PowerShell Execution
@@ -121,7 +139,6 @@ def matches_det_003(data: dict) -> bool:
     grouped_events = {}
 
     for event in failed_logons:
-
         user = str(
             event.get("TargetUserName", "")
         ).strip().lower()
@@ -130,20 +147,11 @@ def matches_det_003(data: dict) -> bool:
             event.get("IpAddress", "")
         ).strip().lower()
 
-        timestamp_value = event.get("TimeCreated")
+        timestamp = parse_timestamp(
+            event.get("TimeCreated")
+        )
 
-        if not user or not source_ip or not timestamp_value:
-            continue
-
-        try:
-            timestamp = datetime.fromisoformat(
-                str(timestamp_value).replace(
-                    "Z",
-                    "+00:00",
-                )
-            )
-
-        except ValueError:
+        if not user or not source_ip or timestamp is None:
             continue
 
         key = (user, source_ip)
@@ -188,10 +196,160 @@ def matches_det_003(data: dict) -> bool:
     return False
 
 
+def matches_det_004(data: dict) -> bool:
+    """
+    DET-004 — Successful Logon After Repeated Failures
+
+    Detects at least five failed Event ID 4625 logons
+    against the same user from the same source IP within
+    five minutes, followed by Event ID 4624 successful
+    authentication from the same user and source.
+
+    The successful authentication must occur after the
+    failures and no more than five minutes after the first
+    failure in the correlated sequence.
+    """
+
+    events = data.get("events", [])
+
+    if not isinstance(events, list):
+        return False
+
+    grouped_events = {}
+
+    for event in events:
+
+        event_id = event.get("EventID")
+
+        if event_id not in (4624, 4625):
+            continue
+
+        user = str(
+            event.get("TargetUserName", "")
+        ).strip().lower()
+
+        source_ip = str(
+            event.get("IpAddress", "")
+        ).strip().lower()
+
+        timestamp = parse_timestamp(
+            event.get("TimeCreated")
+        )
+
+        if not user or not source_ip or timestamp is None:
+            continue
+
+        key = (user, source_ip)
+
+        grouped_events.setdefault(
+            key,
+            [],
+        ).append(
+            {
+                "event_id": event_id,
+                "timestamp": timestamp,
+            }
+        )
+
+    failure_threshold = 5
+    correlation_window = timedelta(minutes=5)
+
+    for event_group in grouped_events.values():
+
+        event_group.sort(
+            key=lambda item: item["timestamp"]
+        )
+
+        failures = [
+            item
+            for item in event_group
+            if item["event_id"] == 4625
+        ]
+
+        successes = [
+            item
+            for item in event_group
+            if item["event_id"] == 4624
+        ]
+
+        if len(failures) < failure_threshold:
+            continue
+
+        if not successes:
+            continue
+
+        for start_index in range(len(failures)):
+
+            correlated_failures = []
+
+            first_failure_time = failures[
+                start_index
+            ]["timestamp"]
+
+            for current_index in range(
+                start_index,
+                len(failures),
+            ):
+
+                current_failure = failures[
+                    current_index
+                ]
+
+                time_difference = (
+                    current_failure["timestamp"]
+                    - first_failure_time
+                )
+
+                if time_difference <= correlation_window:
+                    correlated_failures.append(
+                        current_failure
+                    )
+                else:
+                    break
+
+            if (
+                len(correlated_failures)
+                < failure_threshold
+            ):
+                continue
+
+            last_failure_time = (
+                correlated_failures[-1][
+                    "timestamp"
+                ]
+            )
+
+            for success in successes:
+
+                success_time = success[
+                    "timestamp"
+                ]
+
+                success_after_failures = (
+                    success_time
+                    > last_failure_time
+                )
+
+                success_within_window = (
+                    success_time
+                    - first_failure_time
+                    <= correlation_window
+                )
+
+                if (
+                    success_after_failures
+                    and success_within_window
+                ):
+                    return True
+
+    return False
+
+
 DETECTIONS = {
     "DET-001": matches_det_001,
     "DET-002": matches_det_002,
     "DET-003": matches_det_003,
+    "DET-004": matches_det_004,
 }
 
 
