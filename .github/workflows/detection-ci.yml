@@ -27,6 +27,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Validate Sigma rules
+        run: |
+          python scripts/validate_sigma.py
+
       - name: Run detection tests
         run: |
           python scripts/test_detections.py
