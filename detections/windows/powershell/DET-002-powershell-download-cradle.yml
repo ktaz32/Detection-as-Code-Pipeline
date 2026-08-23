@@ -1,0 +1,44 @@
+title: Suspicious PowerShell Download Cradle
+id: 8e8e67b1-7b56-4f2e-8f22-9c5a9d9e2002
+status: experimental
+description: >
+  Detects PowerShell command lines commonly associated with downloading
+  remote content or executing scripts retrieved from external locations.
+author: Khaled Taseen
+date: 2026-08-23
+
+logsource:
+  category: process_creation
+  product: windows
+
+detection:
+  selection_image:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+
+  selection_download:
+    CommandLine|contains:
+      - 'Invoke-WebRequest'
+      - 'iwr '
+      - 'DownloadString'
+      - 'DownloadFile'
+      - 'WebClient'
+      - 'Start-BitsTransfer'
+      - 'curl '
+      - 'wget '
+
+  condition: selection_image and selection_download
+
+falsepositives:
+  - Legitimate administrative scripts downloading approved resources
+  - Software deployment or update automation
+  - IT troubleshooting activity
+
+level: high
+
+tags:
+  - attack.execution
+  - attack.t1059.001
+  - attack.command-and-control
+  - attack.t1105

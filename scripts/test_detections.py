@@ -31,6 +31,34 @@ def matches_det_001(event: dict) -> bool:
     return image_match and command_match
 
 
+def matches_det_002(event: dict) -> bool:
+    image = str(event.get("Image", "")).lower()
+    command_line = str(event.get("CommandLine", "")).lower()
+
+    powershell_images = (
+        "\\powershell.exe",
+        "\\pwsh.exe",
+        "powershell.exe",
+        "pwsh.exe",
+    )
+
+    download_indicators = (
+        "invoke-webrequest",
+        "iwr ",
+        "downloadstring",
+        "downloadfile",
+        "webclient",
+        "start-bitstransfer",
+        "curl ",
+        "wget ",
+    )
+
+    image_match = any(image.endswith(x) for x in powershell_images)
+    command_match = any(x in command_line for x in download_indicators)
+
+    return image_match and command_match
+
+
 def load_json(path: Path) -> dict:
     with path.open("r", encoding="utf-8") as f:
         return json.load(f)
