@@ -1,0 +1,11 @@
+{
+  "events": [
+    {
+      "EventID": 4625,
+      "TargetUserName": "jsmith",
+      "IpAddress": "192.0.2.50",
+      "Computer": "WIN11-LAB",
+      "TimeCreated": "2026-08-23T10:00:00Z"
+    }
+  ]
+}

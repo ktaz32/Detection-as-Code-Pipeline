@@ -1,0 +1,32 @@
+title: Multiple Failed Windows Logons
+id: 3c19fa4a-c71e-43cf-b960-4d4cf0ce3003
+status: experimental
+description: >
+  Detects multiple failed Windows logon attempts associated with the same
+  user account or source host within a short period. This behavior may
+  indicate brute-force activity, password spraying, credential guessing,
+  or repeated unauthorized authentication attempts.
+author: Khaled Taseen
+date: 2026-08-23
+
+logsource:
+  product: windows
+  service: security
+
+detection:
+  selection:
+    EventID: 4625
+
+  condition: selection
+
+falsepositives:
+  - Users repeatedly entering an incorrect password
+  - Expired or stale credentials used by services or scheduled tasks
+  - Misconfigured applications repeatedly attempting authentication
+  - Legitimate administrative troubleshooting
+
+level: medium
+
+tags:
+  - attack.credential-access
+  - attack.t1110
