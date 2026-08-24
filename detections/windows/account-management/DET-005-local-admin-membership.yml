@@ -1,0 +1,33 @@
+title: User Added to Local Administrators Group
+id: 7b6e2e45-6e12-4b6a-9c72-49b3bf0a5005
+status: experimental
+description: >
+  Detects a user being added to a local security-enabled group, with
+  emphasis on membership changes affecting the local Administrators
+  group. Unauthorized administrator membership may indicate privilege
+  escalation, persistence, or account takeover activity.
+author: Khaled Taseen
+date: 2026-08-23
+
+logsource:
+  product: windows
+  service: security
+
+detection:
+  selection:
+    EventID: 4732
+
+  condition: selection
+
+falsepositives:
+  - Approved administrator provisioning
+  - IT support adding authorized local administrators
+  - Endpoint deployment or management automation
+  - Temporary administrative access granted through an approved process
+
+level: high
+
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.t1098

@@ -1,0 +1,10 @@
+{
+  EventID 4732,
+  TargetUserName Administrators,
+  TargetDomainName Builtin,
+  MemberName WIN11-LABtempadmin,
+  MemberSid S-1-5-21-1111111111-2222222222-3333333333-1005,
+  SubjectUserName administrator,
+  Computer WIN11-LAB,
+  TimeCreated 2026-08-23T110000Z
+}

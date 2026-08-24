@@ -1,0 +1,10 @@
+{
+  "EventID": 4732,
+  "TargetUserName": "Remote Desktop Users",
+  "TargetDomainName": "Builtin",
+  "MemberName": "WIN11-LAB\\test-user",
+  "MemberSid": "S-1-5-21-1111111111-2222222222-3333333333-1006",
+  "SubjectUserName": "administrator",
+  "Computer": "WIN11-LAB",
+  "TimeCreated": "2026-08-23T11:02:00Z"
+}

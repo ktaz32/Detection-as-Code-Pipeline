@@ -345,11 +345,31 @@ def matches_det_004(data: dict) -> bool:
     return False
 
 
+def matches_det_005(event: dict) -> bool:
+    """
+    DET-005 — User Added to Local Administrators Group
+
+    Detects Event ID 4732 when the modified local group
+    is the built-in Administrators group.
+    """
+
+    event_id = event.get("EventID")
+
+    target_group = str(
+        event.get("TargetUserName", "")
+    ).strip().lower()
+
+    return (
+        event_id == 4732
+        and target_group == "administrators"
+    )
+
 DETECTIONS = {
     "DET-001": matches_det_001,
     "DET-002": matches_det_002,
     "DET-003": matches_det_003,
     "DET-004": matches_det_004,
+    "DET-005": matches_det_005,	
 }
 
 
