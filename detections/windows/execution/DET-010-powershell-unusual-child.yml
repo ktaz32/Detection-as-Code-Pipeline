@@ -1,0 +1,45 @@
+title: PowerShell Spawning Unusual Child Process
+id: 5d4ce423-f849-4fb8-9e6e-3bbf29f51010
+status: experimental
+description: >
+  Detects PowerShell spawning child processes that may indicate
+  suspicious script execution, proxy execution, persistence activity,
+  or post-exploitation behavior. PowerShell commonly launches legitimate
+  commands, so this rule focuses on higher-risk child processes.
+author: Khaled Taseen
+date: 2026-08-24
+
+logsource:
+  category: process_creation
+  product: windows
+
+detection:
+  selection_parent:
+    ParentImage|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+
+  selection_child:
+    Image|endswith:
+      - '\cmd.exe'
+      - '\rundll32.exe'
+      - '\regsvr32.exe'
+      - '\mshta.exe'
+      - '\wscript.exe'
+      - '\cscript.exe'
+      - '\schtasks.exe'
+      - '\certutil.exe'
+
+  condition: selection_parent and selection_child
+
+falsepositives:
+  - Legitimate administrative PowerShell scripts
+  - Software deployment or endpoint-management activity
+  - Approved automation
+  - Troubleshooting workflows
+
+level: high
+
+tags:
+  - attack.execution
+  - attack.t1059.001

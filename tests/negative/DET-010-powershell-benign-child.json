@@ -1,0 +1,10 @@
+{
+  "EventID": 4688,
+  "Image": "C:\\Windows\\System32\\notepad.exe",
+  "CommandLine": "notepad.exe",
+  "ParentImage": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+  "ParentCommandLine": "powershell.exe -Command Start-Process notepad.exe",
+  "User": "LAB\\test-user",
+  "Computer": "WIN11-LAB",
+  "TimeCreated": "2026-08-24T15:02:00Z"
+}

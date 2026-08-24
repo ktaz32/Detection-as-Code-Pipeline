@@ -594,6 +594,69 @@ def matches_det_009(event: dict) -> bool:
     return False
 
 
+def matches_det_010(event: dict) -> bool:
+    """
+    DET-010 — PowerShell Spawning Unusual Child Process
+
+    Detects PowerShell or pwsh spawning selected higher-risk
+    child processes commonly observed in suspicious execution chains.
+    """
+
+    event_id = event.get("EventID")
+
+    image = str(
+        event.get("Image", "")
+    ).strip().lower()
+
+    parent_image = str(
+        event.get("ParentImage", "")
+    ).strip().lower()
+
+    if event_id != 4688:
+        return False
+
+    powershell_parents = (
+        "\\powershell.exe",
+        "\\pwsh.exe",
+        "powershell.exe",
+        "pwsh.exe",
+    )
+
+    suspicious_children = (
+        "\\cmd.exe",
+        "\\rundll32.exe",
+        "\\regsvr32.exe",
+        "\\mshta.exe",
+        "\\wscript.exe",
+        "\\cscript.exe",
+        "\\schtasks.exe",
+        "\\certutil.exe",
+        "cmd.exe",
+        "rundll32.exe",
+        "regsvr32.exe",
+        "mshta.exe",
+        "wscript.exe",
+        "cscript.exe",
+        "schtasks.exe",
+        "certutil.exe",
+    )
+
+    parent_match = any(
+        parent_image.endswith(parent)
+        for parent in powershell_parents
+    )
+
+    child_match = any(
+        image.endswith(child)
+        for child in suspicious_children
+    )
+
+    return (
+        parent_match
+        and child_match
+    )
+
+
 DETECTIONS = {
     "DET-001": matches_det_001,
     "DET-002": matches_det_002,
@@ -603,7 +666,8 @@ DETECTIONS = {
     "DET-006": matches_det_006,
     "DET-007": matches_det_007,
     "DET-008": matches_det_008,
-    "DET-009": matches_det_009,	
+    "DET-009": matches_det_009,
+    "DET-010": matches_det_010,	
 }
 
 
