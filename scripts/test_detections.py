@@ -413,13 +413,75 @@ def matches_det_006(event: dict) -> bool:
     return image_match and command_match
 
 
+def matches_det_007(event: dict) -> bool:
+    """
+    DET-007 — Suspicious Scheduled Task Creation
+
+    Detects scheduled-task creation using schtasks.exe
+    or PowerShell scheduled-task cmdlets.
+    """
+
+    image = str(
+        event.get("Image", "")
+    ).strip().lower()
+
+    command_line = str(
+        event.get("CommandLine", "")
+    ).strip().lower()
+
+    schtasks_match = (
+        image.endswith("\\schtasks.exe")
+        or image.endswith("schtasks.exe")
+    )
+
+    schtasks_create_indicators = (
+        "/create",
+        "/sc ",
+        "/tn ",
+        "/tr ",
+    )
+
+    schtasks_create = any(
+        indicator in command_line
+        for indicator in schtasks_create_indicators
+    )
+
+    powershell_match = any(
+        image.endswith(executable)
+        for executable in (
+            "\\powershell.exe",
+            "\\pwsh.exe",
+            "powershell.exe",
+            "pwsh.exe",
+        )
+    )
+
+    powershell_task_indicators = (
+        "register-scheduledtask",
+        "new-scheduledtask",
+        "new-scheduledtaskaction",
+        "new-scheduledtasktrigger",
+    )
+
+    powershell_task = any(
+        indicator in command_line
+        for indicator in powershell_task_indicators
+    )
+
+    return (
+        (schtasks_match and schtasks_create)
+        or
+        (powershell_match and powershell_task)
+    )
+
 DETECTIONS = {
     "DET-001": matches_det_001,
     "DET-002": matches_det_002,
     "DET-003": matches_det_003,
     "DET-004": matches_det_004,
     "DET-005": matches_det_005,
-    "DET-006": matches_det_006,	
+    "DET-006": matches_det_006,
+    "DET-007": matches_det_007,	
 }
 
 
