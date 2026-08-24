@@ -1,0 +1,55 @@
+title: Suspicious Scheduled Task Creation
+id: 4c3c2c8a-2f7a-4f71-9f20-6e2b37c97007
+status: experimental
+description: >
+  Detects suspicious Windows scheduled task creation using schtasks.exe
+  or PowerShell. Scheduled tasks are commonly used for legitimate
+  administration, but may also be abused for persistence, execution,
+  or privilege escalation.
+author: Khaled Taseen
+date: 2026-08-24
+
+logsource:
+  category: process_creation
+  product: windows
+
+detection:
+  selection_schtasks:
+    Image|endswith:
+      - '\schtasks.exe'
+
+  selection_create:
+    CommandLine|contains:
+      - '/create'
+      - '/sc '
+      - '/tn '
+      - '/tr '
+
+  selection_powershell:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+
+  selection_ps_task:
+    CommandLine|contains:
+      - 'Register-ScheduledTask'
+      - 'New-ScheduledTask'
+      - 'New-ScheduledTaskAction'
+      - 'New-ScheduledTaskTrigger'
+
+  condition: (selection_schtasks and selection_create) or (selection_powershell and selection_ps_task)
+
+falsepositives:
+  - Legitimate software installation
+  - Enterprise management tooling
+  - Approved administrator automation
+  - Backup or maintenance jobs
+  - Endpoint deployment workflows
+
+level: high
+
+tags:
+  - attack.persistence
+  - attack.privilege-escalation
+  - attack.execution
+  - attack.t1053.005

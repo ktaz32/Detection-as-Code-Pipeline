@@ -1,0 +1,8 @@
+{
+  "EventID": 4688,
+  "Image": "C:\\Windows\\System32\\schtasks.exe",
+  "CommandLine": "schtasks.exe /query /fo LIST",
+  "User": "LAB\\test-user",
+  "Computer": "WIN11-LAB",
+  "TimeCreated": "2026-08-24T12:02:00Z"
+}

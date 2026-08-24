@@ -1,0 +1,8 @@
+{
+  "EventID": 4688,
+  "Image": "C:\\Windows\\System32\\schtasks.exe",
+  "CommandLine": "schtasks.exe /create /tn UpdateCheck /tr \"powershell.exe -WindowStyle Hidden -File C:\\Users\\Public\\update.ps1\" /sc onlogon",
+  "User": "LAB\\test-user",
+  "Computer": "WIN11-LAB",
+  "TimeCreated": "2026-08-24T12:00:00Z"
+}
