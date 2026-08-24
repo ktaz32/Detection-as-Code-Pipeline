@@ -474,6 +474,49 @@ def matches_det_007(event: dict) -> bool:
         (powershell_match and powershell_task)
     )
 
+
+def matches_det_008(event: dict) -> bool:
+    """
+    DET-008 — Suspicious LSASS Process Access
+
+    Detects process-access telemetry targeting lsass.exe
+    with access masks commonly associated with memory
+    inspection or credential-dumping behavior.
+    """
+
+    event_id = event.get("EventID")
+
+    target_image = str(
+        event.get("TargetImage", "")
+    ).strip().lower()
+
+    granted_access = str(
+        event.get("GrantedAccess", "")
+    ).strip().lower()
+
+    lsass_match = (
+        target_image.endswith("\\lsass.exe")
+        or target_image.endswith("lsass.exe")
+    )
+
+    suspicious_access_masks = (
+        "0x1010",
+        "0x1410",
+        "0x1438",
+        "0x1fffff",
+    )
+
+    access_match = (
+        granted_access in suspicious_access_masks
+    )
+
+    return (
+        event_id == 10
+        and lsass_match
+        and access_match
+    )
+
+
 DETECTIONS = {
     "DET-001": matches_det_001,
     "DET-002": matches_det_002,
@@ -481,7 +524,8 @@ DETECTIONS = {
     "DET-004": matches_det_004,
     "DET-005": matches_det_005,
     "DET-006": matches_det_006,
-    "DET-007": matches_det_007,	
+    "DET-007": matches_det_007,
+    "DET-008": matches_det_008,	
 }
 
 

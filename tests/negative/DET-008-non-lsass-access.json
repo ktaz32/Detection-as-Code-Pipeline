@@ -1,0 +1,9 @@
+{
+  "EventID": 10,
+  "SourceImage": "C:\\Windows\\System32\\taskmgr.exe",
+  "TargetImage": "C:\\Windows\\System32\\notepad.exe",
+  "GrantedAccess": "0x1010",
+  "SourceUser": "LAB\\test-user",
+  "Computer": "WIN11-LAB",
+  "TimeCreated": "2026-08-24T13:02:00Z"
+}

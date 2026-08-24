@@ -1,0 +1,40 @@
+title: Suspicious LSASS Process Access
+id: 82f94798-7d62-4d82-9c0e-53a7fb4f8008
+status: experimental
+description: >
+  Detects suspicious access to the Local Security Authority Subsystem
+  Service (LSASS) process. LSASS contains authentication material and
+  is a common target for credential-dumping techniques.
+author: Khaled Taseen
+date: 2026-08-24
+
+logsource:
+  product: windows
+  category: process_access
+
+detection:
+  selection_target:
+    TargetImage|endswith:
+      - '\lsass.exe'
+
+  selection_access:
+    GrantedAccess:
+      - '0x1010'
+      - '0x1410'
+      - '0x1438'
+      - '0x1fffff'
+
+  condition: selection_target and selection_access
+
+falsepositives:
+  - Endpoint security products inspecting LSASS
+  - Authorized diagnostic or forensic tools
+  - System-management software
+  - Legitimate authentication or security software
+
+level: high
+
+tags:
+  - attack.credential-access
+  - attack.t1003
+  - attack.t1003.001
