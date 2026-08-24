@@ -517,6 +517,83 @@ def matches_det_008(event: dict) -> bool:
     )
 
 
+def matches_det_009(event: dict) -> bool:
+    """
+    DET-009 — Suspicious LOLBin Execution
+
+    Detects suspicious command-line use of commonly abused
+    signed Windows binaries such as mshta.exe, regsvr32.exe,
+    and rundll32.exe.
+    """
+
+    event_id = event.get("EventID")
+
+    image = str(
+        event.get("Image", "")
+    ).strip().lower()
+
+    command_line = str(
+        event.get("CommandLine", "")
+    ).strip().lower()
+
+    if event_id != 4688:
+        return False
+
+    is_mshta = (
+        image.endswith("\\mshta.exe")
+        or image.endswith("mshta.exe")
+    )
+
+    mshta_indicators = (
+        "http://",
+        "https://",
+        "javascript:",
+        "vbscript:",
+    )
+
+    if is_mshta and any(
+        indicator in command_line
+        for indicator in mshta_indicators
+    ):
+        return True
+
+    is_regsvr32 = (
+        image.endswith("\\regsvr32.exe")
+        or image.endswith("regsvr32.exe")
+    )
+
+    regsvr32_indicators = (
+        "/i:http",
+        "/i:https",
+        "scrobj.dll",
+    )
+
+    if is_regsvr32 and any(
+        indicator in command_line
+        for indicator in regsvr32_indicators
+    ):
+        return True
+
+    is_rundll32 = (
+        image.endswith("\\rundll32.exe")
+        or image.endswith("rundll32.exe")
+    )
+
+    rundll32_indicators = (
+        "javascript:",
+        "mshtml",
+        "url.dll",
+    )
+
+    if is_rundll32 and any(
+        indicator in command_line
+        for indicator in rundll32_indicators
+    ):
+        return True
+
+    return False
+
+
 DETECTIONS = {
     "DET-001": matches_det_001,
     "DET-002": matches_det_002,
@@ -525,7 +602,8 @@ DETECTIONS = {
     "DET-005": matches_det_005,
     "DET-006": matches_det_006,
     "DET-007": matches_det_007,
-    "DET-008": matches_det_008,	
+    "DET-008": matches_det_008,
+    "DET-009": matches_det_009,	
 }
 
 

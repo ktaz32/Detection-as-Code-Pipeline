@@ -1,0 +1,57 @@
+title: Suspicious LOLBin Execution
+id: d4d1b8f4-4dd8-4e26-9a3f-5e0d7a7b9009
+status: experimental
+description: >
+  Detects suspicious execution of commonly abused Windows signed binaries
+  using command-line patterns associated with proxy execution, script
+  execution, remote content retrieval, or defense evasion.
+author: Khaled Taseen
+date: 2026-08-24
+
+logsource:
+  category: process_creation
+  product: windows
+
+detection:
+  selection_mshta:
+    Image|endswith:
+      - '\mshta.exe'
+    CommandLine|contains:
+      - 'http://'
+      - 'https://'
+      - 'javascript:'
+      - 'vbscript:'
+
+  selection_regsvr32:
+    Image|endswith:
+      - '\regsvr32.exe'
+    CommandLine|contains:
+      - '/i:http'
+      - '/i:https'
+      - 'scrobj.dll'
+
+  selection_rundll32:
+    Image|endswith:
+      - '\rundll32.exe'
+    CommandLine|contains:
+      - 'javascript:'
+      - 'mshtml'
+      - 'url.dll'
+      - 'shell32.dll'
+
+  condition: selection_mshta or selection_regsvr32 or selection_rundll32
+
+falsepositives:
+  - Legitimate administrative use of signed Windows utilities
+  - Software installation or registration activity
+  - Approved troubleshooting
+  - Enterprise management tooling
+
+level: high
+
+tags:
+  - attack.defense-evasion
+  - attack.t1218
+  - attack.t1218.005
+  - attack.t1218.010
+  - attack.t1218.011

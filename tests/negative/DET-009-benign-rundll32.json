@@ -1,0 +1,9 @@
+{
+  "EventID": 4688,
+  "Image": "C:\\Windows\\System32\\rundll32.exe",
+  "CommandLine": "rundll32.exe shell32.dll,Control_RunDLL appwiz.cpl",
+  "ParentImage": "C:\\Windows\\explorer.exe",
+  "User": "LAB\\test-user",
+  "Computer": "WIN11-LAB",
+  "TimeCreated": "2026-08-24T14:02:00Z"
+}
