@@ -1,0 +1,8 @@
+{
+  "EventID": 4688,
+  "Image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+  "CommandLine": "powershell.exe Set-MpPreference -DisableRealtimeMonitoring $true",
+  "User": "LAB\\test-user",
+  "Computer": "WIN11-LAB",
+  "TimeCreated": "2026-08-24T11:30:00Z"
+}

@@ -364,12 +364,62 @@ def matches_det_005(event: dict) -> bool:
         and target_group == "administrators"
     )
 
+
+def matches_det_006(event: dict) -> bool:
+    """
+    DET-006 — Windows Defender Disabled or Weakened
+
+    Detects PowerShell commands that modify Defender
+    settings in ways commonly associated with weakening
+    endpoint protections.
+    """
+
+    image = str(
+        event.get("Image", "")
+    ).strip().lower()
+
+    command_line = str(
+        event.get("CommandLine", "")
+    ).strip().lower()
+
+    powershell_images = (
+        "\\powershell.exe",
+        "\\pwsh.exe",
+        "powershell.exe",
+        "pwsh.exe",
+    )
+
+    defender_change_indicators = (
+        "set-mppreference",
+        "add-mppreference",
+        "-disablerealtimemonitoring",
+        "-disablebehaviormonitoring",
+        "-disableioavprotection",
+        "-exclusionpath",
+        "-exclusionprocess",
+        "-exclusionextension",
+    )
+
+    image_match = any(
+        image.endswith(executable)
+        for executable in powershell_images
+    )
+
+    command_match = any(
+        indicator in command_line
+        for indicator in defender_change_indicators
+    )
+
+    return image_match and command_match
+
+
 DETECTIONS = {
     "DET-001": matches_det_001,
     "DET-002": matches_det_002,
     "DET-003": matches_det_003,
     "DET-004": matches_det_004,
-    "DET-005": matches_det_005,	
+    "DET-005": matches_det_005,
+    "DET-006": matches_det_006,	
 }
 
 
