@@ -1,5 +1,7 @@
 # Detection-as-Code Pipeline
 
+[![Detection CI](https://github.com/ktaz32/Detection-as-Code-Pipeline/actions/workflows/detection-ci.yml/badge.svg)](https://github.com/ktaz32/Detection-as-Code-Pipeline/actions/workflows/detection-ci.yml)
+
 A Windows detection-engineering portfolio that treats security detections like software: **version-controlled Sigma rules, positive and negative test fixtures, automated Python validation, MITRE ATT&CK mapping, analyst playbooks, and GitHub Actions CI**.
 
 The repository contains **10 detection cases** spanning execution, authentication, credential access, privilege escalation, persistence, defense evasion, and living-off-the-land behavior.
